@@ -1,0 +1,6 @@
+/node-modules
+/build
+
+npm-debug.log
+security-rules.json
+.netlify
