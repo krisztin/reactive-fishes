@@ -1,6 +1,8 @@
-/node-modules
+/node_modules
 /build
+/src/css
 
 npm-debug.log
 security-rules.json
 .netlify
+package-lock.json
