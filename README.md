@@ -27,9 +27,14 @@ Building a React.js app from start to finish. Working with create-react-app, rea
   - [binding](#binding)
   - [Events](#events)
 - [State](#state)
+  - [Methods that change state](#methods-that-change-state)
   - [Updating state](#updating-state)
   - [Loading data into state](#loading-data-into-state)
   - [Displaying state with JSX](#displaying-state-with-jsx)
+- [Persisting State with Firebase](#persisting-state-with-firebase)
+  - [Mirror state to Firebase - Lifecycle methods](#mirror-state-to-firebase---lifecycle-methods)
+    - [Syncing with ComponentDidMount()](#syncing-with-componentdidmount)
+    - [Preventing memory leak with componentWillUnMount()](#preventing-memory-leak-with-componentwillunmount)
 
 ## Random notes
 
@@ -37,17 +42,17 @@ Building a React.js app from start to finish. Working with create-react-app, rea
 
 * `<input>` cannot pass `value` in there. It has to be `defaultValue={}`
 
-Example using a helper function
+### helper functions
+
+Little functions that don't need to be a component can be added in a `helpers.js` file
+
+_Example using a helper function_
 ```js
 import { helperFunction1 } from 'functionlocation';
 
 <input defaultValue={helperFunction1()} />
 
 ```
-
-### helper functions
-
-Little functions that don't need to be a component can be added in a `helpers.js` file
 
 ## Components / Classes
 
@@ -358,11 +363,21 @@ state = {
 
 ```
 
+You can pass down the whole state but really, don't use it, it's lazy and could pollute
+
+`{...this.state}`
+
+Just be **specific** and pass what you actually need
+
+`partOfState={this.state.partOfState}`
+
+### Methods that change state
+
 `state` mostly lives in `App.js` you will need to add all methods that change `state` here and then pass it down through the components as data cannot be passed up, only down. You pass down a method with props.
 
 ```js
 //App level
-methodName = (stateObject) => {
+methodName = () => {
 
 }
 <Component1 methodName={this.methodName}/>
@@ -475,6 +490,63 @@ const { image, name, other, stuff } = this.props.details
 
 ```
 
+## Persisting State with Firebase
+
+Firebase that sucker instead of AJAX pinging the database. It uses websockets that updates data in real time.
+
+`base.js`
+```js
+import Rebase from "re-base";
+import firebase from "firebase";
+
+const firebaseApp = firebase.initializeApp({
+  apiKey: "yourkey",
+  authDomain: "",
+  databaseURL: ""
+});
+
+// create rebase bindings
+const base = Rebase.createClass(firebaseApp.database());
+
+// named export
+export { firebaseApp };
+
+// default export
+export default base;
+```
+
+### Mirror state to Firebase - Lifecycle methods
+
+Like document ready or window.onLoad in JQuery
+
+Specific to the fishy React app is that all 'stores' have a different URL passed through from Router into the props which creates a seperate database for each 'store' in Firebase
+
+#### Syncing with ComponentDidMount()
+
+```js
+import base from '../base';
+
+componentDidMount() {
+  // this is a different ref and is from Firebase
+  // we dug this up from the React Dev Tools digging into the App's props
+  // needs to be done as all stores have different DBs
+  this.ref = base.syncState(`${this.props.match.params.storeID}/fishes`, {
+    // sync takes an object
+    context: this,
+    state: 'fishes'
+  });
+}
+```
+
+#### Preventing memory leak with componentWillUnMount()
+
+We are listening for changes constantly so when a user mounts and unmounts several times => memory leak.
+
+```js
+componentWillUnMount() {
+  base.removeBinding(this.ref);
+}
+```
 
 random
 `event.currentTarget.reset()` - to reset a form
