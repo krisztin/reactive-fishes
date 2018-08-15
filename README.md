@@ -34,7 +34,7 @@ Building a React.js app from start to finish. Working with create-react-app, rea
 - [Persisting State with Firebase](#persisting-state-with-firebase)
   - [Mirror state to Firebase - Lifecycle methods](#mirror-state-to-firebase---lifecycle-methods)
     - [Syncing with ComponentDidMount()](#syncing-with-componentdidmount)
-    - [Preventing memory leak with componentWillUnMount()](#preventing-memory-leak-with-componentwillunmount)
+    - [Preventing memory leak with componentWillUnmount()](#preventing-memory-leak-with-componentwillunmount)
 
 ## Random notes
 
@@ -538,15 +538,13 @@ componentDidMount() {
 }
 ```
 
-#### Preventing memory leak with componentWillUnMount()
+#### Preventing memory leak with componentWillUnmount()
 
 We are listening for changes constantly so when a user mounts and unmounts several times => memory leak.
 
 ```js
-componentWillUnMount() {
+componentWillUnmount() {
   base.removeBinding(this.ref);
 }
 ```
 
-random
-`event.currentTarget.reset()` - to reset a form
