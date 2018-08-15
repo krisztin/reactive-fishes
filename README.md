@@ -27,6 +27,9 @@ Building a React.js app from start to finish. Working with create-react-app, rea
   - [binding](#binding)
   - [Events](#events)
 - [State](#state)
+  - [Updating state](#updating-state)
+  - [Loading data into state](#loading-data-into-state)
+  - [Displaying state with JSX](#displaying-state-with-jsx)
 
 ## Random notes
 
@@ -336,4 +339,142 @@ We are getting this data from React Router, as `StorePicker.js` is in `Router.js
 
 ## State
 
-`state` lives in `App.js` you will need to add all methods that change `state` here and then pass it down through the components.
+State is essentially an object that stores all the data that that component and some of its children may need.
+
+_Initial state_
+
+```js
+constructor() {
+  super();
+  this.state = {
+  }
+}
+
+// OR go with a property
+
+state = {
+// start with [] {} or '' whatever the set state is going to be
+}
+
+```
+
+`state` mostly lives in `App.js` you will need to add all methods that change `state` here and then pass it down through the components as data cannot be passed up, only down. You pass down a method with props.
+
+```js
+//App level
+methodName = (stateObject) => {
+
+}
+<Component1 methodName={this.methodName}/>
+//Going deeper - this.props as it now lives in the props
+<Component2 methodName={this.props.methodName}/>
+// It can now be called in the component
+this.props.methodName()
+```
+
+### Updating state
+Can only be done with the update state API. You never want to reach into state and modify it (mutation) directly.
+
+*Take a copy of the existing state* `const name = {...this.state.stateName}`
+
+```js
+addFish = fish => {
+  // copy state
+  const fishes = {...this.state.fishes}
+  // add new item with date.now adding a unique ID at the end
+  fishes[`fish${Date.now()}`] = fish; // this is the object we passed in from the AddFishForm
+  // setstate - overwrites state
+  this.setState({
+    fishes: fishes // if prop and value are the same it could be just: fishes
+  })
+}
+```
+
+### Loading data into state
+
+Whole `js` file
+
+```js
+import sampleFishes from './whereyoustoreit';
+
+loadSampleFished = () => {
+  this.setState({ fishes: sampleFishes })
+}
+
+```
+
+Adding a single item on to the `order`
+
+```js
+addToOrder = key => {
+  const order = {...this.state.order};
+  order[key] = order[key] + 1 || 1;
+  this.setState({ order });
+}
+```
+However this means you'll need access to the `key` which you can do by setting up another prop with the value {key}
+
+`key={key} index{key}`
+
+*Button event*
+```js
+handleClick = () => {
+  this.props.addToOrder(this.props.key);
+}
+<button onClick={this.handleClick}></button>
+
+// inline if it's just a one off
+<button onClick={() => this.props.addToOrder(this.props.key)}></button>
+
+```
+
+### Displaying state with JSX
+
+State is an object that you cannot `map` over so you first have to
+
+1. `{Object.keys(this.state.fishes)}`
+2. Now you can `map`
+
+```js
+
+{Object.keys(this.state.fishes).map(key =>
+  <p>stuff</p>
+ )}
+
+```
+To make React react faster it needs unique identifiers for pieces of components that get updated.
+
+```js
+
+{Object.keys(this.state.fishes).map(key =>
+  <componentName key={key} />
+ )}
+
+```
+
+Passing down data by adding in a prop named whatever (e.g. `details` as below)
+
+```js
+
+{Object.keys(this.state.fishes).map(key =>
+  <componentName key={key} details={this.state.fishes[key]}/>
+ )}
+
+```
+
+Using state in Components
+
+```js
+// props.propName.objectkey
+<img src={this.props.details.image} />
+
+// you can E6 destructuring it
+const { image, name, other, stuff } = this.props.details
+
+<img src={image} />
+
+```
+
+
+random
+`event.currentTarget.reset()` - to reset a form
