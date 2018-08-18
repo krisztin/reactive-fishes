@@ -86,7 +86,7 @@ class App extends React.Component {
     return (
       <div className="catch-of-the-day">
         <div className="menu">
-        <Header tagline="Fresh Seasfood Market" />
+        <Header tagline="Fresh Seafood Market" />
           <ul className="fishes">
             {Object.keys(this.state.fishes).map(key => (
               <Fish
@@ -102,10 +102,6 @@ class App extends React.Component {
         <Order
           fishes={this.state.fishes}
           order={this.state.order}
-          // or because these are all from state you can just spread
-          // {...this.state}
-          // but don't do this because you can add stuff to state in future
-          // and they might be useless here
           removeFromOrder={this.removeFromOrder}
           />
         <Inventory
