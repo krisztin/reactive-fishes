@@ -39,6 +39,7 @@ Building a React.js app from start to finish. Working with create-react-app, rea
 - [Persisting state with localStorage with componentDidUpdate()](#persisting-state-with-localstorage-with-componentdidupdate)
 - [Bi-directional Data Flow and Live State Editing](#bi-directional-data-flow-and-live-state-editing)
   - [ES6 - Computed property names](#es6---computed-property-names)
+- [Removing items from state](#removing-items-from-state)
 
 ## Random notes
 
@@ -646,4 +647,26 @@ handleChange = event => {
     />
   ));
 }
+```
+
+## Removing items from state
+
+```js
+deleteFish = key => {
+  // copy state
+  const fishes = { ...this.state.fishes };
+  // update state - it needs to be null so that Firebase knows to delete it
+  fishes[key] = null;
+  // set state
+  this.setState({ fishes });
+};
+
+removeFromOrder = key => {
+  // copy state
+  const order = { ...this.state.order };
+  // update state - this is not mirrored to Firebase so we can just delete
+  delete order[key];
+  // set state
+  this.setState({ order });
+};
 ```
