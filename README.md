@@ -37,6 +37,8 @@ Building a React.js app from start to finish. Working with create-react-app, rea
     - [Syncing with ComponentDidMount()](#syncing-with-componentdidmount)
     - [Preventing memory leak with componentWillUnmount()](#preventing-memory-leak-with-componentwillunmount)
 - [Persisting state with localStorage with componentDidUpdate()](#persisting-state-with-localstorage-with-componentdidupdate)
+- [Bi-directional Data Flow and Live State Editing](#bi-directional-data-flow-and-live-state-editing)
+  - [ES6 - Computed property names](#es6---computed-property-names)
 
 ## Random notes
 
@@ -571,5 +573,77 @@ componentDidMount() {
     context: this,
     state: 'fishes'
   });
+}
+```
+
+## Bi-directional Data Flow and Live State Editing
+
+Say you want a form that updates part of your state (`EditFishForm.js`). It's important to add a `name` to your form fields as it will help to dynamically change these values in state without getting specific (i.e. you won't have to have a handlePriceChange method).
+
+### ES6 - Computed property names
+
+`event.currentTarget.name` will equal to whichever field was edited.
+
+```js
+handleChange = event => {
+  const updatedStateName = {
+    // take a copy of the state
+    ...this.props.StateName,
+    [event.currentTarget.name]: event.currentTarget.value
+  }
+}
+
+<input type="number" name="price" onChange={this.handleChange} value={this.props.price}/>
+
+// Fishy
+
+handleChange = event => {
+  const updatedFish = {
+    ...this.props.fish,
+    [event.currentTarget.name]: event.currentTarget.value
+  }
+}
+```
+
+Next step is to push this up to the app/where state lives
+
+```js
+updateFish = (key, updatedFish) => {
+  // copy state
+  const fishes = { ...this.state.fishes };
+  // update state
+  fishes[key] = updatedFish;
+  // set state
+  this.setState({ fishes });
+};
+```
+
+Then pass the method back down via props `updateFish={this.updateFish}` etc.
+
+And finally add it to `handleChange`
+
+```js
+handleChange = event => {
+  const updatedFish = {
+    ...this.props.fish,
+    [event.currentTarget.name]: event.currentTarget.value
+  };
+  this.props.updateFish(this.props.index, updatedFish);
+};
+```
+
+`index` is passed down from props
+
+```js
+{
+  Object.keys(this.props.fishes).map(key => (
+    <EditFishForm
+      key={key}
+      //cannot use key in editfishform so we need an index
+      index={key}
+      fish={this.props.fishes[key]}
+      updateFish={this.props.updateFish}
+    />
+  ));
 }
 ```
