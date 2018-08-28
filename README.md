@@ -40,6 +40,7 @@ Building a React.js app from start to finish. Working with create-react-app, rea
 - [Bi-directional Data Flow and Live State Editing](#bi-directional-data-flow-and-live-state-editing)
   - [ES6 - Computed property names](#es6---computed-property-names)
 - [Removing items from state](#removing-items-from-state)
+- [Animating React Components](#animating-react-components)
 
 ## Random notes
 
@@ -670,3 +671,25 @@ removeFromOrder = key => {
   this.setState({ order });
 };
 ```
+
+## Animating React Components
+
+`component` specifies what HTML element the group actually is.
+
+```js
+import { TransitionGroup, CSSTransition } from "react-transition-group";
+
+<TransitionGroup component="ul/div/whatever">
+  wrapping up the stuff to transition
+</TransitionGroup>;
+
+<CSSTransition
+  classNames="classname"
+  key={key}
+  timeout={{ enter: 250, exit: 250 }}
+>
+  stuff to transition
+</CSSTransition>;
+```
+
+Then in CSS you can use: `classname-enter` `classname-exit` `classname-enter-active`
